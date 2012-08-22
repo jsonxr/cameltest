@@ -1,0 +1,30 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+    ">
+
+	<bean id="customerServProcessor" class="com.fusesource.samples.CustomerServiceProcessor"/>
+    <!-- this is an included XML file where we only the the routeContext -->
+    <routeContext id="CustomerServiceRoutes" xmlns="http://camel.apache.org/schema/spring">
+        <!-- we can have a route -->
+        <route id="route2">
+            <from uri="cxfrs://http://localhost:9090/route2?resourceClasses=com.fusesource.samples.CustomerServiceResource"/>
+            <setHeader headerName="CamelFileName"><simple>test-${body}.xml</simple></setHeader>
+            <pollEnrich uri="file:src/data?noop=true" strategyRef="customerServProcessor" timeout="-1" />
+            <log message="Here is the message that was enriched: ${body}" />
+            <!--  to uri="jms:destinationName"  -->
+        </route>
+    </routeContext>
+
+<!-- 
+        from("cxfrs://http://localhost:9090/route?resourceClasses=com.fusesource.samples.CustomerServiceResource")
+                .setHeader(Exchange.FILE_NAME, simple("test-${body}.xml"))
+                .pollEnrich("file:src/data?noop=true", 1000, new CustomerEnricher())
+                .process(new CustomerServiceProcessor())
+                .log("Here is the message that was enriched: ${body}");
+
+ -->
+ 
+</beans>

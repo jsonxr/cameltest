@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+              http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+              http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+	<bean id="jms" class="org.apache.camel.component.jms.JmsComponent">
+	  <property name="connectionFactory">
+	    <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+	      <property name="brokerURL" value="tcp://0.0.0.0:61616" />
+	    </bean>
+	  </property>
+	</bean>
+
+    <cxf:rsServer id="rsServer" address="http://localhost:9090/route"
+                  serviceClass="com.fusesource.samples.CustomerServiceResource"/>
+
+	<bean id="routeBuilder" class="com.fusesource.samples.CustomerServiceRoute"/>
+    
+
+	<!-- import the routes from another XML file -->
+	<import resource="CustomerServiceRoute.xml"/>
+	<camelContext xmlns="http://camel.apache.org/schema/spring">
+		<routeBuilder ref="routeBuilder"/>
+	    <!-- refer to a given route to be used -->
+	    <routeContextRef ref="CustomerServiceRoutes"/>
+	</camelContext>
+
+
+
+</beans>
