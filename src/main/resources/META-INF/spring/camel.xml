@@ -22,11 +22,27 @@
 
 	<!-- import the routes from another XML file -->
 	<import resource="CustomerServiceRoute.xml"/>
+	<!-- refer to a given route to be used -->
 	<camelContext xmlns="http://camel.apache.org/schema/spring">
-		<routeBuilder ref="routeBuilder"/>
-	    <!-- refer to a given route to be used -->
-	    <routeContextRef ref="CustomerServiceRoutes"/>
-	</camelContext>
+    <route id="route2">
+        <description>to uri="jms:destinationName"</description>
+        <from uri="cxfrs://http://localhost:9090/route2?resourceClasses=com.fusesource.samples.CustomerServiceResource"/>
+        <setHeader headerName="CamelFileName">
+            <simple>test-${body}.xml</simple>
+        </setHeader>
+        <pollEnrich strategyRef="customerServProcessor" timeout="-1" uri="file:src/data?noop=true"/>
+        <log message="Here is the message that was enriched: ${body}"/>
+    </route>
+    <route id="route1">
+        <description>to uri="jms:destinationName"</description>
+        <from uri="cxfrs://http://localhost:9090/route1?resourceClasses=com.fusesource.samples.CustomerServiceResource"/>
+        <setHeader headerName="CamelFileName">
+            <simple>test-${body}.xml</simple>
+        </setHeader>
+        <pollEnrich strategyRef="customerServProcessor" timeout="-1" uri="file:src/data?noop=true"/>
+        <log message="Here is the message that was enriched: ${body}"/>
+    </route>
+</camelContext>
 
 
 

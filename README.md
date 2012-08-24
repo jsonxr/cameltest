@@ -1,3 +1,4 @@
+
 To run the sample, build with maven and run camel:run to start the endpoint.
 Then point your browser or favorite HTTP tool to the endpoint:
 
